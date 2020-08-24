@@ -5,13 +5,19 @@ namespace App\Entity;
 use App\Repository\PropertyRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\String\Slugger\AsciiSlugger;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=PropertyRepository::class)
+ *  * @UniqueEntity(
+ *     fields={"title"},
+ *     errorPath="title",
+ *     message="Ce Titre est déjà utilisé."
+ * )
  */
 class Property
 {
-
     const HEAT = [
         0 => 'Électrique',
         1 => 'Gaz'
@@ -26,6 +32,13 @@ class Property
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Length(
+     *      min = 5,
+     *      max = 255,
+     *      minMessage = "Ce titre doit avoir plus {{ limit }} charactères",
+     *      maxMessage = "Ce titre doit avoir moins {{ limit }} charactères",
+     *      allowEmptyString = false
+     *      )     
      */
     private $title;
 
@@ -36,11 +49,13 @@ class Property
 
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @Assert\NotBlank
      */
     private $description;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\Range(min=10, max=400)
      */
     private $surface;
 
@@ -81,6 +96,9 @@ class Property
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Regex( 
+     *      pattern = "/^[0-9]{5}$/",
+     *      message ="Le code Postal doit être composée de 5 chiffres")
      */
     private $postal_code;
 
